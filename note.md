@@ -39,3 +39,21 @@ $token = $_SESSION["csrfToken"];
 <?php endif; ?>
 ?>
 ```
+
+- 日本語の文字列の長さを知りたい場合
+
+```php
+strlen("あああ") //6 バイト数を取得している
+mb_strlen("あああ") //3 文字数を取得している。半角も全角も１文字は１文字と扱う。
+```
+
+`empty(fefefe)`は fefefe が 0 の時にも true にしてしまう。値の存在は`isset`メソッドを使う。
+
+- バリデーションをする時に役立つメソッド
+  URL や Email が正しい形式になっているかを判定する。正しい形式になっていたら true を返す。
+
+```php
+//filter_var(＜バリデーションしたい変数＞,＜バリデーションのパターン（メアドとかURLとか）＞)
+filter_var($request["email"], FILTER_VALIDATE_EMAIL);
+filter_var($request["url"], FILTER_VALIDATE_URL);
+```
