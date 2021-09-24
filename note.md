@@ -57,3 +57,30 @@ mb_strlen("あああ") //3 文字数を取得している。半角も全角も�
 filter_var($request["email"], FILTER_VALIDATE_EMAIL);
 filter_var($request["url"], FILTER_VALIDATE_URL);
 ```
+
+## ベーシック認証
+
+.htaccess ファイルで指定する。
+
+- パスワード作成
+
+```php
+password_hash("password123", PASSWORD_BCRYPT);
+//password_hast(＜ハッシュ貸したいパスワード＞,＜ハッシュ化の方法＞):
+```
+
+- .htaccess
+
+```txt
+AuthType Basic
+AuthName "メッセージ"
+AuthUserFile ＜パスワードを保存したファイルのパス＞
+require valid-user
+```
+
+- パスワードを保存したファイル
+
+```txt
+admin:＜ハッシュ化したパスワード＞
+//＜ユーザー名＞:＜ハッシュ化したパスワード＞
+```
