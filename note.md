@@ -134,3 +134,65 @@ $lines = explode(",", $lineData);
   echo $lines[2] . "<br>";
 }
 ```
+
+# section4
+
+## セッションとクッキーの使い方その１
+
+- `$_SESSION` はサーバ側で値を管理するのでブラウザを変えてもログインできる。
+- `$_COOKIE` はブラウザで保存する。
+
+```php
+
+<?php
+//セッションを始める
+session_start();
+?>
+//セッションは連想配列
+$_SESSION["visited"] = 1;
+
+//クッキー
+//setcookie(＜キー＞,＜バリュー＞,＜期限＞,??);
+setcookie("id", "aaa", ,"/");
+```
+
+## セッションとクッキーの破棄の仕方
+
+```php
+<?php
+echo "セッションを破棄しました";
+//空の配列を渡すことでセッションを破棄する
+$_SESSION = [];
+
+//クッキーの有効期限を過去にすることでクッキーを破棄する
+setcookie("PHPSESSID", "", time()  - 1800, "/");
+```
+
+## 便利ないろいろ
+
+### 型をつける
+
+```php
+declare(strict_types=1); //強い型指定
+
+//PHP7から関数の後ろに`:string`とすることで返り値にも型をつけられる
+function typeTest(string $string):string // 引数stringの他に、array, callable, bool, float, int, object, クラス名、インターフェース名
+{
+    var_dump($string);
+    return $string;
+}
+
+typeTest(['配列文字']);
+// 引数にstringと指定しているのに配列->こちらはエラー
+```
+
+### array_map
+
+引数に関数を取ることができる。
+
+```php
+$parameters = ['  空白あり ', '  配列 ', ' 空白あり  '];
+//array_map(＜関数名(ここではPHPの組み込みの関数trimを使っているが自作でも良い)＞,＜操作したい変数＞)
+$trimedParameters = array_map('trim', $parameters);
+//['空白あり', '配列', '空白あり'];
+```
