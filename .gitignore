@@ -1,2 +1,6 @@
 */reference\_*
 /php_test_20210703
+##### Composer
+composer.phar
+vendor/
+composer.lock

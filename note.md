@@ -196,3 +196,290 @@ $parameters = ['  空白あり ', '  配列 ', ' 空白あり  '];
 $trimedParameters = array_map('trim', $parameters);
 //['空白あり', '配列', '空白あり'];
 ```
+
+# section5
+
+モダン PHP
+
+- PSR-1,2,4(PHP コーディング規約)
+
+## class
+
+- アクセス修飾子
+  - private（外からアクセスできない）
+  - protected（自分と継承したクラスがアクセスできる）
+  - public(他のクラスからでもアクセスできる)
+
+```php
+class Product
+{
+  //変数
+  private $product = [];
+    //初回に実行される
+
+  //コンストラクタ
+  function __construct($product)
+  {
+    $this->product = $product;
+  }
+
+  //関数
+  public function getProduct()
+  {
+    //$thisはこのクラスの中という意味、productはprivateで宣言した$productのこと。
+    //$がないことに気をつけよ
+    echo $this->product;
+  }
+
+  //静的関数
+  //静的(static) インスタンス化しなくても使える。使い方(クラス名::関数名)
+  public static function getStaticProduct($str)
+  {
+    echo $str;
+  }
+}
+//インスタンス化
+$instance = new Product("テスト");
+
+//関数実行
+$instance->getProduct();
+
+//静的関数実行
+Product::getStaticProduct("静的");
+```
+
+## 継承
+
+```php
+//親クラス
+class BaseProduct
+{
+  //変数、関数
+  public function echoProduct()
+  {
+    echo "親クラスです。";
+  }
+
+  //オーバーライド（上書き）(子クラスで上書きできる。)
+  public function getProduct()
+  {
+    echo "親の関数です";
+  }
+}
+```
+
+## 抽象クラス
+
+- 接頭辞に`abstract`をつける。
+- 抽象クラスで書かれた抽象メソッドは必ず子クラスで実装する必要がある。
+- 抽象クラスで書かれた抽象メソッドにはメソッド名しか書けない。具体的な処理は書けない
+- インターフェースと違い具体的なメソッドもかける。
+- 抽象クラスは普通のクラスとインターフェースの中間のイメージ
+
+```php
+//抽象クラス　// 設定するメソッドを強制する。
+abstract class ProductAbstract
+{
+  //変数、関数
+  public function echoProduct()
+  {
+    echo "親クラスです。";
+  }
+
+  //抽象メソッド
+  abstract public function getProduct();
+}
+
+// 子クラス
+class Product extends ProductAbstract
+{
+  private $product = [];
+
+  function __construct($product)
+  {
+    $this->product = $product;
+  }
+
+  //抽象クラスで書かれた抽象メソッドを子クラスで実装している。
+  public function getProduct()
+  {
+    echo $this->product;
+  }
+}
+```
+
+## インターフェース
+
+- 接頭辞に`abstract`をつける。
+- 抽象クラスと違い具体的なメソッドはかけない。
+- クラスは継承は１つしかできないが、インターフェースは複数`implements`できる。
+
+デザインパターン
+
+- https://qiita.com/yuka-12/items/435c64888b8ba6ecf136
+
+## トレイト
+
+初めて聞いた。PHP で多重継承するイメージ
+
+- 接頭辞に`trait`をつける。
+- `use ＜trait名＞`で使える。
+
+```php
+<?php
+
+trait ProductTrait
+{
+  public function getProduct()
+  {
+    echo "プロダクト";
+  }
+}
+
+trait NewsTrait
+{
+  public function getNews()
+  {
+    echo "ニュース";
+  }
+}
+
+class Product
+{
+  use ProductTrait;
+  use NewsTrait;
+
+  public function getInformation()
+  {
+    echo "クラスです。";
+  }
+}
+
+$product = new Product();
+
+$product->getInformation();
+echo "<br>";
+
+$product->getProduct();
+echo "<br>";
+
+$product->getNews();
+echo "<br>";
+```
+
+## Composer の使い方
+
+NameSpace
+
+- composer の初期化
+
+```
+composer init
+```
+
+これで composer.json ができる。
+
+autoload ができるように composer.json を書き換える。
+
+```json
+{
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  }
+}
+```
+
+これができたら autoload のするためにいろいろインストールするコマンドを入力する。
+
+```
+composer install
+```
+
+これで vender フォルダができる。
+
+## NameSpace を実際に使ってみる。
+
+- ディレクトリ構成
+
+```
+/app
+ - Controllers
+   - TestController.php
+ - Models
+   - TestModel.php
+```
+
+- TestModel.php
+
+```php
+//ここのAppはcomposer.jsonでかかれた`"App\\": "app/"`と関連している
+namespace App\Models;
+
+//ファイル名とクラス名を一致させる必要がある。（１ファイル１クラス）
+class TestModel
+{
+  private $text = "hello world";
+
+  public function getHello()
+  {
+    return $this->text;
+  }
+}
+```
+
+- TestController.php
+  TestModel.php で定義した class TestModel を使う。
+
+```php
+// App\はcomposer.jsonで指定した`"App\\"="app"`のこと
+// 自分の存在を示す的な
+namespace App\Controllers;
+
+//jsのimportみたいな感じ
+use App\Models\TestModel;
+
+class TestController
+{
+  public function run()
+  {
+    $model = new TestModel;
+    echo $model->getHello();
+  }
+}
+```
+
+- index.php
+  - require_once をするのはこのファイルだけ
+  - composer コマンドで作成した autoload.php を読み込む
+
+```php
+require_once __DIR__ . "/vendor/autoload.php";
+
+use App\Controllers\TestController;
+
+$app = new TestController;
+$app->run();
+
+```
+
+## Carbon(composer のライブラリ)
+
+Carbon:日付操作のライブラリ
+
+Carbon ライブラリのインストール
+
+```
+composer require nesbot/carbon
+```
+
+これで composer.json が書き換えられる。package.json みたいな感じか。
+
+- 使い方(index.php)
+
+```php
+//import
+use Carbon\Carbon;
+echo Carbon::now();
+```
