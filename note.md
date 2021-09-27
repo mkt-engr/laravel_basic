@@ -483,3 +483,47 @@ composer require nesbot/carbon
 use Carbon\Carbon;
 echo Carbon::now();
 ```
+
+# せくしょん 6 Laravel 入門
+
+- larabel インストール
+
+```
+composer create-project laravel/laravel task_test --prefer-dist "6.*"
+```
+
+- サーバ立てる
+
+```
+php artisan serve
+```
+
+## Laravel の初期設定
+
+### タイムゾーン、言語設定
+
+- `config/app.php`
+  - "timezone"=>"Asia/Tokyo";
+  - "locale" => "ja";
+
+### データベースの文字コード
+
+- config/database.php
+  - "charset" => "utf8"
+
+### デバックバー
+
+表示されている画面の情報や DB とのやりとりをするのに使える。
+
+```
+composer require barryvdh/laravel-debugbar
+```
+
+## キャッシュクリアの方法
+
+.env の`APP_DEBUG=true`でデバックのためのバーが出る。これを false にしても出てしまう場合はキャッシュクリアする。
+
+```
+php artisan cache:clear
+php artisan config:clear
+```
