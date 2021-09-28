@@ -527,3 +527,73 @@ composer require barryvdh/laravel-debugbar
 php artisan cache:clear
 php artisan config:clear
 ```
+
+## DB 設定
+
+.env に以下の記述があるので書き換える。
+
+```
+DB_CONNECTION=fefefe
+DB_HOST=fefefe
+DB_PORT=fefefe
+DB_DATABASE=fefefe
+DB_USERNAME=fefefe
+DB_PASSWORD=fefefe
+```
+
+- 接続できたかのコマンド
+
+```
+php artisan migrate
+```
+
+## Laravel 概要
+
+- MVC
+  - Model：データベースとやりとり
+  - View：見た目
+  - Controller：処理
+  - Routing：アクセスの振り分け
+  - Migration：DB テーブルの管理
+
+### ルーティング
+
+- web.php
+
+views ディレクトリの`welcome.blade.php`を呼び出す。
+
+```php
+Route::get('/', function () {
+    return view('welcome');
+});
+```
+
+### モデル
+
+Laravel では DB のやりとりを PHP で書ける。
+
+Eloquent(OR マッパーの名前)
+ORM/OR マッパー
+
+以下のコマンドを入力すると`app\Models`の下にモデルができる
+
+```
+php artisan make:model Models/Test
+```
+
+- Test.php
+
+名前空間も書いてくれてる。
+
+```
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Test extends Model
+{
+    //
+}
+```
