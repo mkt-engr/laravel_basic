@@ -597,3 +597,111 @@ class Test extends Model
     //
 }
 ```
+
+## Laravel マイグレーション
+
+マイグレーション：DB テーブルの履歴管理
+
+```
+php artisan make:migration create_tests_table
+```
+
+これをすることで`database/migrations/YYYY_MM_DD_create_tests_table.php`が作成される。
+参考：https://readouble.com/laravel/6.x/ja/migrations.html
+
+- YYY_MM_DD_create_tests_table.php(の一部)
+
+```php
+    public function up()
+    {
+        Schema::create('tests', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string("text", 100);//追加
+            $table->timestamps();
+        });
+    }
+
+```
+
+これで`id`とか`text`を書いたテーブルが作成できる。テーブル作成コマンドは
+
+```
+php artisan migrate
+```
+
+## tinker(DB 簡易接続)
+
+ターミナルで DB に接続できる。
+
+```
+php artisan tinker
+```
+
+これを叩くと以下のようにコマンドが打てる。
+`>>>`が自分が入力したところである。
+
+- save()で DB にある table に insert
+- all()で select \* from ~~~
+
+```
+>>> $test = new App\Models\Test;
+=> App\Models\Test {#3377}
+>>> $test->text= "aaa";
+=> "aaa"
+>>> $test -> save();
+=> true
+>>> App\Models\Test::all()
+=> Illuminate\Database\Eloquent\Collection {#4100
+     all: [
+       App\Models\Test {#4099
+         id: 1,
+         text: "aaa",
+         created_at: "2021-09-29 23:17:24",
+         updated_at: "2021-09-29 23:17:24",
+       },
+     ],
+   }
+>>>
+```
+
+## コントローラー
+
+コントローラーを作成するコマンド
+
+```
+php artisan make:controller TestController
+//php artisan make:controller ＜コントローラーの名前＞
+```
+
+これで`app/Http/Controllers/TestController.php`が作成される。
+
+## MVC のモデルの記述方法 1
+
+web.php に書く。第１引数の URL にきた時に第２引数のコントローラーのメソッドを呼び出す。
+
+```php
+Route::get("tests/test", "TestController@index");
+//Route::get(＜URL＞, ＜コントローラー名@メソッド名＞);
+```
+
+- TestController.php
+
+```php
+class TestController extends Controller
+{
+    //
+    public function index()
+    {
+      // resource/view/tests/test.blade.phpのテンプレートが読み込まれる。
+        return view("tests.test");
+    }
+}
+```
+
+読み込むテンプレートは`＜名前＞.blade.php`のように`blade`を必ず入れる。
+
+## MVC のモデルの記述方法 2
+
+DB から値を引っ張ってきてテンプレートに表示する。
+
+-
