@@ -704,4 +704,58 @@ class TestController extends Controller
 
 DB から値を引っ張ってきてテンプレートに表示する。
 
--
+.env の DB 情報を変更した時はもう１度`php artisan serve`をする。
+
+- TestController.php
+
+* `compact`で View に変数を渡す。
+* `compact`の中身は引数は幾つでも良い
+* `compact`の中身は渡したい変数の`$`を除いたもの
+
+```php
+$values = Test::all();//select * from testsみたいな感じ
+//dd($values);//値をブラウザに表示して処理を停止する。
+return view("tests.test", compact('values'));
+//return view(＜viewの格納先＞)
+```
+
+- test.blade.php
+  実際に View に表示する。
+
+```php
+//$valueはコントローラーから渡した値。
+@foreach($values as $value)
+{{$value->id}}<br>
+{{$value->text}}<br>
+@endforeach
+```
+
+## ヘルパ関数
+
+Laravel が用意している関数
+
+`return view`とか
+
+https://readouble.com/laravel/6.x/ja/helpers.html
+
+## コレクション型
+
+https://readouble.com/laravel/6.x/ja/collections.html
+
+配列を拡張した型、Laravel 特有のもの
+
+## クエリビルダ
+
+https://readouble.com/laravel/6.x/ja/queries.html
+
+SQL の代わりに PHP の構文で書く。以下は select 文っぽい。
+
+```php
+$tests = DB::table("tests")->select("id")->get();
+```
+
+## ファサード
+
+https://shimooka.hateblo.jp/entry/20141215/1418620292
+
+Laravel:https://readouble.com/laravel/6.x/ja/facades.html
