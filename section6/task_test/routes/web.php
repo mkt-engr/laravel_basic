@@ -17,6 +17,7 @@ Route::get('/', function () {
 
 Route::get("tests/test", "TestController@index");
 
+Route::get("sample", "SampleController@index");
 // Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
