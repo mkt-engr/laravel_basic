@@ -759,3 +759,82 @@ $tests = DB::table("tests")->select("id")->get();
 https://shimooka.hateblo.jp/entry/20141215/1418620292
 
 Laravel:https://readouble.com/laravel/6.x/ja/facades.html
+
+## Laravel 起動処理 DI とサービスコンテナ
+
+https://qiita.com/namizatork/items/801da1d03dc322fad70c
+
+`public/index.php`が Laravel を起動した時に最初に動く。`autoload`とかもこのファイルにある。
+
+## Blade
+
+https://readouble.com/laravel/6.x/ja/blade.html
+
+- `@if @foreach`などの`@`から始まるものが使える。
+- `{{name}}`で PHP の`htmlspecialchars`が既に施された状態になり XSS 攻撃を防ぐ
+- `@csrf`で CSRF 対策ができる。
+
+## FrontEnd
+
+- laravel-ui : Laravel6.x から
+- laravel-mix : webpack のラッパー
+- webpack.mix.ks : laravel-mix に設定ファイル
+
+## Laravel-ui 認証
+
+スカフォールド（足場）：https://readouble.com/laravel/6.x/ja/frontend.html
+
+フロントエンドで使われる SCSS とか Vue とかがまとめられたもの。
+
+インストール方法
+
+```
+composer require laravel/ui:^1.0 --dev
+```
+
+composer.json に laravel-ui の記述があれば良い。
+
+続いて Bootstrap とログイン/ユーザー登録スカフォールドを作成する。
+
+```
+php artisan ui bootstrap --auth
+```
+
+- `routes/web.php`に`Auth::routes();`が追加されている。
+- `Http/Controllers/Auth`したにいろいろ追加されている。
+- `Http/user.php`にも追加されている。
+
+* Bootstrap の追加は`npm i`
+
+## フォームのエラーメッセージの日本語化
+
+`resource/lang/validation.php`にメッセージがある。
+
+メッセージを日本語化した GitHub のリポジトリ：https://github.com/minoryorg/laravel-resources-lang-ja
+
+`/config/app.php`の`'locale' => 'ja',`を変更する。
+
+- resource/lang/ja/validation.php
+  password という文字を変更したい場合は以下のように変更する。
+
+```php
+'attributes' => [
+    "password" => "パスワード" //追加
+],
+```
+
+### URL の設定
+
+ファイルの一覧をみたい時
+
+```
+php artisan route:list
+```
+
+テキストに出力したい場合は以下のコマンド
+
+```
+php artisan route:list
+```
+
+マルチログイン機能：https://coinbaby8.com/laravel-udemy-multilogin.html
