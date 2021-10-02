@@ -12,4 +12,9 @@ class SampleController extends Controller
 
         return view("sample.app");
     }
+
+    public function child()
+    {
+        return view("sample.child");
+    }
 }

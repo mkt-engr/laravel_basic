@@ -838,3 +838,16 @@ php artisan route:list
 ```
 
 マルチログイン機能：https://coinbaby8.com/laravel-udemy-multilogin.html
+
+## Blade のドキュメント読んでみた。
+
+https://readouble.com/laravel/7.x/ja/blade.html
+
+ここで出てくるディレクティブ
+
+- `@section`
+- `@yield`
+- `@show`
+- `@parent`
+
+マスターレイアウト（大枠）を作ってその中に別のレイアウトを埋め込む。
