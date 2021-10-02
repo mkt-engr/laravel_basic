@@ -904,3 +904,76 @@ https://readouble.com/laravel/7.x/ja/blade.html
 <p>ここが本文のコンテンツ</p>
 @endsection
 ```
+
+# セクション 7 簡易ウェブアプリ（CRUD/RESTful）
+
+Model →Controller 　 → Route → 　 View の順で作る
+
+- Model の作成
+  -m でマイグレーションファイルを作成する(テーブル作成の履歴的な、バージョンコントロールのような機能ですって laravel のドキュメントに書いてあった。)
+
+```
+php artisan make:model Models/ContactForm -m
+```
+
+上のコマンドを打って作成したマイグレーションファイルに追記してカラムを作成する
+
+- まいぐれーしょんふぁいる
+
+https://readouble.com/laravel/6.x/ja/migrations.html
+これの「カラム作成」をみる
+
+```php
+//氏名、メールアドレス、url,性別、年齢、お問い合わせ内容
+$table->string("your_name", 20);
+$table->string("email", 255);
+$table->longText("url")->nullable($value = true);
+$table->tinyInteger("gender");
+$table->string("contact", 200);
+```
+
+これを元にマイグレーションを実行する。
+
+```
+php artisan migrate
+```
+
+phpmyadmin で確認すると contact_forms テーブルができている
+
+## マイグレーションとロールバック
+
+### カラムの追加
+
+`--table=＜テーブル名＞`で存在するテーブルに追加できる。
+
+```
+php artisan make:migration add_title_to_contact_forms_table --table=contact_forms
+```
+
+作成したマイグレーションファイルに以下を追加する。
+
+```php
+$table->string("title", 50)->after("your_name");
+```
+
+`->after`修飾子でカラムを挿入したい位置を指定できる。
+
+```
+php artisan migrate
+```
+
+と入力しテーブルにカラムを追加する。
+
+```
+php artisan migrate:status
+```
+
+でマイグレーションファイルをみることができる。
+
+### ロールバック
+
+```
+php artisan migrate:rollback
+```
+
+でロールバックできる。
