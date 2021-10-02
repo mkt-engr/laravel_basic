@@ -849,5 +849,58 @@ https://readouble.com/laravel/7.x/ja/blade.html
 - `@yield`
 - `@show`
 - `@parent`
+- `@extends`
 
 マスターレイアウト（大枠）を作ってその中に別のレイアウトを埋め込む。
+
+- app.blade.php(マスターレイアウト)
+
+```php
+<html>
+<head>
+  <title>アプリ名 - @yield('title')</title>
+</head>
+<body>
+  @section('sidebar')
+  ここがメインのサイドバー
+  @show
+
+  <div class="container">
+    @yield('content')
+  </div>
+</body>
+</html>
+```
+
+- マスターレイアウトの`@yield("title")`は子供のレイアウトで`@section("title","埋め込む内容")`と使う。
+- めちゃわかりにくいけどここでは`@section`を`@show`で閉じている。（`@endsectionShow`）とかでええやんと今は思う。
+  - 親のレイアウトで`@show`をつけると子供のレイアウトで`@parent`と書くことで親のレイアウトの中身が出せる
+    - ここでは「ここがメインのサイドバー」と子供のレイアウトで表示できる。
+    - 子供のレイアウトで`@parent`を書かないと親のレイアウトの中身は子のレイアウトの中身で上書かれる。
+
+```php
+@section('sidebar')
+ここがメインのサイドバー
+@show
+```
+
+- child.blade.php(子供のレイアウト)
+  - `@extend`で親のレイアウトを読み込む
+  - `@section`の第 1 引数は親のレイアウトで定義してある。
+  - `@section`の第 2 引数は親のレイアウトでに埋め込むもの
+
+```php
+@extends('sample.app')
+
+@section('title', 'Page Title AAA')
+
+@section('sidebar')
+ @parent
+
+<p>ここはメインのサイドバーに追加される</p>
+@endsection
+
+@section('content')
+<p>ここが本文のコンテンツ</p>
+@endsection
+```
