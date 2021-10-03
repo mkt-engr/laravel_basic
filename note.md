@@ -1044,3 +1044,16 @@ Route::group(["prefix" => "contact", "middleware" => "auth"], function () {
     // ユーザーは認証されていない
 @endguest
 ```
+
+## login.blade.php
+
+web.php で書いた`->(contact.index)`はビューテンプレートの中で使える。
+
+- login.blade.php
+
+```php
+<form method="POST" action="{{ route('login') }}">
+<form method="POST" action="{{ route('contact.index') }}">
+```
+
+- form のなかには`@csrf`を必ず入れる必要がある。
