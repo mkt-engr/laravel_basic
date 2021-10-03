@@ -977,3 +977,70 @@ php artisan migrate:rollback
 ```
 
 でロールバックできる。
+
+## RestFul なコントローラー
+
+https://readouble.com/laravel/6.x/ja/controllers.html
+
+`--resource`をつけることで Controller の中を REST 用に作ってくれる。（いろいろなメソッドを作ってくれる。上の参考の URL にある index から destroy までの８個を作ってくれる。）
+
+```
+php artisan make:controller ContactFormController --resource
+```
+
+- web.php
+  コマンドで作られた８個のメソッドの内利用するものを選ぶ（または使わないものを除く）
+
+```php
+Route::resource('photos', 'PhotoController')->only([
+    'index', 'show'
+]);
+
+Route::resource('photos', 'PhotoController')->except([
+    'create', 'store', 'update', 'destroy'
+]);
+```
+
+## ルーティング(グループ・認証)
+
+https://readouble.com/laravel/6.x/ja/routing.html
+
+### ルートグループ
+
+```
+php artisan make:controller ContactFormController --resource
+```
+
+これで REST のメソッドを８個作ったがそれをルーティングする処理を書こうとすると以下のようにいちいち`contact/`と書く必要があり冗長になる。
+
+```php
+Route::get("contact/index", "ContactFormController@index");
+Route::get("contact/create", "ContactFormController@create");
+Route::get("contact/edit", "ContactFormController@edit");
+Route::get("contact/delete", "ContactFormController@delete");
+```
+
+これを防ぐのがルーティンググループ
+
+```php
+//["prefix"=>＜URLにまとめてまとめてつけるプレフィックス＞,"middleware"=>＜使いたいミドルウェア＞]//今回は認証系のミドルウェアを使っている。
+Route::group(["prefix" => "contact", "middleware" => "auth"], function () {
+    //この場合だとcontact/indexにアクセスした時にContactFormControllerのindexメソッドにアクセスする。
+    //->nameでエイリアスをつけられる
+    Route::get("index", "ContactFormController@index")->name("contact.index");
+});
+```
+
+## layout.blade.php を読む
+
+- `@auth`と`@guest`ディレクティブは、現在のユーザーが認証されているか、もしくはゲストであるかを簡単に判定するために使用します。
+
+```php
+@auth
+    // ユーザーは認証済み
+@endauth
+
+@guest
+    // ユーザーは認証されていない
+@endguest
+```

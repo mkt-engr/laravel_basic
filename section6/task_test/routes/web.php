@@ -17,6 +17,14 @@ Route::get('/', function () {
 
 Route::get("tests/test", "TestController@index");
 
+
+
+Route::group(["prefix" => "contact", "middleware" => "auth"], function () {
+    Route::get("index", "ContactFormController@index")->name("contact.index");
+});
+
+// Route::resource("contacts", "ContactFormController")->only(["index", "show"]);
+
 Route::get("sample", "SampleController@index");
 
 Route::get("sample/child", "SampleController@child");
