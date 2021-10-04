@@ -1057,3 +1057,25 @@ web.php で書いた`->(contact.index)`はビューテンプレートの中で�
 ```
 
 - form のなかには`@csrf`を必ず入れる必要がある。
+
+## 新規登録
+
+- web.php
+
+ビューテンプレートで呼び出す名前を定義する。(`->name(＜ビューで使う名前＞)`)
+
+```php
+Route::group(["prefix" => "contact", "middleware" => "auth"], function () {
+    Route::get("index", "ContactFormController@index")->name("contact.index");
+    Route::get("create", "ContactFormController@create")->name("contact.create");
+});
+```
+
+- index.blade.php
+  web.php で定義した`->name(fefefe)`をここで使う。
+
+```php
+<form method="GET" action="{{ route('contact.create') }}">
+ <button type="submit" class="btn btn-primary">新規登録</button>
+</form>
+```
