@@ -1079,3 +1079,35 @@ Route::group(["prefix" => "contact", "middleware" => "auth"], function () {
  <button type="submit" class="btn btn-primary">新規登録</button>
 </form>
 ```
+
+## データの保存の実装の前に
+
+https://readouble.com/laravel/8.x/ja/requests.html
+
+データの保存は Controller の store メソッドで行う。`Request`が import されており、それを使うことでフォームの値を受け取れる。
+
+- web.php
+  POST の store を追加
+
+```php
+Route::group(["prefix" => "contact", "middleware" => "auth"], function () {
+    Route::get("index", "ContactFormController@index")->name("contact.index");
+    Route::get("create", "ContactFormController@create")->name("contact.create");
+    Route::post("store", "ContactFormController@store")->name("contact.store");
+});
+```
+
+```php
+public function store(Request $request)
+{
+    $your_name = $request->input('your_name');
+    // = $request->input(＜formのname属性＞);
+
+}
+```
+
+フォームで入力された全てのデータの取得は all で行う。
+
+```php
+$input = $request->all();
+```
