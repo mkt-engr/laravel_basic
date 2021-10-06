@@ -31,9 +31,10 @@
                             <input type="text" name="url" value="">
                             <br>
                             性別
-                            <input type="radio" name="gender" id="" value="0">
+                            <input type="radio" name="gender" id="" value="0">男
+                            <input type="radio" name="gender" id="" value="1">女
                             <br>
-                            年齢
+                            {{-- 年齢
                             <select name="age" id="">
                                 <option value="">選択してください</option>
                                 <option value="1">~19歳</option>
@@ -42,7 +43,7 @@
                                 <option value="3">40歳~49歳</option>
                                 <option value="3">50歳~59歳</option>
                                 <option value="3">60歳~</option>
-                            </select>
+                            </select> --}}
                             <br>
                             お問い合わせ内容
                             <textarea name="contact" id=""></textarea>

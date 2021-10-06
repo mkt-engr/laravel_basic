@@ -1111,3 +1111,30 @@ public function store(Request $request)
 ```php
 $input = $request->all();
 ```
+
+## Store保存
+
+* ContactFormController.php
+
+Modelをインポートしてそいつに値を詰める
+```php
+use App\Models\ContactForm;
+
+//~~~~~
+$contact = new ContactForm;
+
+//->＜テーブルのカラム＞
+$contact->your_name = $request->input('your_name');
+$contact->title = $request->input('title');
+$contact->email = $request->input('email');
+$contact->url = $request->input('url');
+$contact->gender = $request->input('gender');
+// $contact->age = $request->input('age');
+$contact->contact = $request->input('contact');
+    
+//テーブルに更新をかける。   
+$contact->save()
+
+//indexページへ戻る
+return redirect("contact/index");
+```
