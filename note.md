@@ -1112,11 +1112,12 @@ public function store(Request $request)
 $input = $request->all();
 ```
 
-## Store保存
+## Store 保存
 
-* ContactFormController.php
+- ContactFormController.php
 
-Modelをインポートしてそいつに値を詰める
+Model をインポートしてそいつに値を詰める
+
 ```php
 use App\Models\ContactForm;
 
@@ -1131,10 +1132,73 @@ $contact->url = $request->input('url');
 $contact->gender = $request->input('gender');
 // $contact->age = $request->input('age');
 $contact->contact = $request->input('contact');
-    
-//テーブルに更新をかける。   
+
+//テーブルに更新をかける。
 $contact->save()
 
 //indexページへ戻る
 return redirect("contact/index");
+```
+
+## DB に保存されている値の取得
+
+- ContactFormController.php
+
+  - エロクワント（OR マッパー）
+
+```php
+$contacts= ContactForm::all();//DBにある全てのレコードを取得
+```
+
+- クエリビルダー
+  
+* ContactFormController.php
+```php
+//DBを操作するモジュールをインポート
+use Illuminate\Support\Facades\DB;
+
+//必要なデータを取得
+$contacts = DB::table('contact_forms')->select("id", "your_name", "title", "created_at")->get();
+
+//compact関数を使ってView側にデータを送る
+return view("contact.index", compact("contacts"));
+```
+
+* index.blade.php(View側)
+```php
+<tbody>
+@foreach ($contacts as $contact)
+<tr>
+<th>{{ $contact->id }}</th>
+<td>{{ $contact->your_name }}</td>
+<td>{{ $contact->title }}</td>
+<td>{{ $contact->created_at }}</td>
+</tr>
+@endforeach                             
+</tbody>
+```
+
+## show表示画面
+
+* 名前付きルート(https://readouble.com/laravel/6.x/ja/routing.html)
+ルーティングの時にパラメタを渡す。
+
+* ContactFormController.php
+```php
+//エロクワントで取得するselect * from ~ where id = $idみたいな感じ
+$contact =   ContactForm::find($id);
+if($contact->gender === 0){
+   $gender = "男性";
+}else if($contact->gender ===1){
+   $gender = "女性";
+}
+//compact関数で変数をViewに渡す
+return view("contact.show",compact("contact","gender"));
+```
+
+* index.blade.php
+ルーティングで変数を渡す
+```php
+//route(＜ルーティング先＞,['＜ルーティング先で使う変数の名前＞'=>＜ルーティング先に送りたい値＞])
+<td><a href="{{ route('contact.show',['id'=>$contact->id])}}">詳細をみる</a></td>
 ```

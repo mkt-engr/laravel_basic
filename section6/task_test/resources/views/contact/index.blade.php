@@ -16,7 +16,34 @@
                         <form method="GET" action="{{ route('contact.create') }}">
                             <button type="submit" class="btn btn-primary">新規登録</button>
                         </form>
-                        indexです。
+
+
+                        
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">氏名</th>
+                                    <th scope="col">タイトル</th>
+                                    <th scope="col">登録日時</th>
+                                    <th scope="col">詳細</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              @foreach ($contacts as $contact)
+                              <tr>
+                            <th>{{ $contact->id }}</th>
+                            <td>{{ $contact->your_name }}</td>
+                            <td>{{ $contact->title }}</td>
+                            <td>{{ $contact->created_at }}</td>
+                            <td><a href="{{ route('contact.show',['id'=>$contact->id])}}">詳細をみる</a></td>
+                              </tr>
+                        @endforeach                             
+                            </tbody>
+                        </table>
+
+
+
                     </div>
                 </div>
             </div>

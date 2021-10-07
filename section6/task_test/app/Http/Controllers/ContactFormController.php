@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ContactForm;
+use Illuminate\Support\Facades\DB;
+
 class ContactFormController extends Controller
 {
     /**
@@ -13,8 +15,13 @@ class ContactFormController extends Controller
      */
     public function index()
     {
-        //
-        return view("contact.index");
+        // エロくワント ORマッパー
+        // $contacts= ContactForm::all();
+
+        //クエリビルダ
+        $contacts = DB::table('contact_forms')->select("id", "your_name", "title", "created_at")->get();
+        // dd($contacts);
+        return view("contact.index", compact("contacts"));
     }
 
     /**
@@ -45,7 +52,7 @@ class ContactFormController extends Controller
         $contact->gender = $request->input('gender');
         // $contact->age = $request->input('age');
         $contact->contact = $request->input('contact');
-            
+
         $contact->save();
 
         return redirect("contact/index");
@@ -63,6 +70,17 @@ class ContactFormController extends Controller
     public function show($id)
     {
         //
+      $contact =   ContactForm::find($id);
+
+      if($contact->gender === 0){
+        $gender = "男性";
+    }
+    else if($contact->gender ===1){
+        $gender = "女性";
+      }
+
+    //   return view("contact.show",compact("contact"));
+      return view("contact.show",compact("contact","gender"));
     }
 
     /**
