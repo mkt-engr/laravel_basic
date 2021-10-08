@@ -21,7 +21,7 @@
                         {{$contact->url}}
                         {{$gender}}
                         {{$contact->contact}}
-                        <form  method="GET" action="">
+                        <form  method="GET" action="{{route('contact.edit',['id'=>$contact->id])}}">
                             @csrf
                            
                             <input type="submit" name="btn btm-info" value="変更する">

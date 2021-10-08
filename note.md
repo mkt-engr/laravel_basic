@@ -1151,8 +1151,9 @@ $contacts= ContactForm::all();//DBにある全てのレコードを取得
 ```
 
 - クエリビルダー
-  
+
 * ContactFormController.php
+
 ```php
 //DBを操作するモジュールをインポート
 use Illuminate\Support\Facades\DB;
@@ -1164,7 +1165,8 @@ $contacts = DB::table('contact_forms')->select("id", "your_name", "title", "crea
 return view("contact.index", compact("contacts"));
 ```
 
-* index.blade.php(View側)
+- index.blade.php(View 側)
+
 ```php
 <tbody>
 @foreach ($contacts as $contact)
@@ -1174,16 +1176,17 @@ return view("contact.index", compact("contacts"));
 <td>{{ $contact->title }}</td>
 <td>{{ $contact->created_at }}</td>
 </tr>
-@endforeach                             
+@endforeach
 </tbody>
 ```
 
-## show表示画面
+## show 表示画面
 
-* 名前付きルート(https://readouble.com/laravel/6.x/ja/routing.html)
-ルーティングの時にパラメタを渡す。
+- 名前付きルート(https://readouble.com/laravel/6.x/ja/routing.html)
+  ルーティングの時にパラメタを渡す。
 
-* ContactFormController.php
+- ContactFormController.php
+
 ```php
 //エロクワントで取得するselect * from ~ where id = $idみたいな感じ
 $contact =   ContactForm::find($id);
@@ -1196,9 +1199,58 @@ if($contact->gender === 0){
 return view("contact.show",compact("contact","gender"));
 ```
 
-* index.blade.php
-ルーティングで変数を渡す
+- index.blade.php
+  ルーティングで変数を渡す
+
 ```php
 //route(＜ルーティング先＞,['＜ルーティング先で使う変数の名前＞'=>＜ルーティング先に送りたい値＞])
 <td><a href="{{ route('contact.show',['id'=>$contact->id])}}">詳細をみる</a></td>
+```
+
+## edit 編集画面
+
+- web.php(ルーティング)
+追加する
+```php
+Route::get("edit/{id}", "ContactFormController@edit")->name("contact.edit");
+```
+
+- ContactFormController.php
+```php
+public function edit($id)
+{
+    //
+    $contact =   ContactForm::find($id)
+    return view("contact.edit",compact("contact"));
+}
+```
+
+- edit.blade.php
+
+* `value={{＜連想配列の取り出し＞}}`
+* `@if($contact->gender === 0)checked @endif`タグの中でif文使える
+```php
+<form  method="POST" action="">
+  @csrf
+  <input type="text" name="your_name" value="  {{$contact->your_name}}">
+  <br>
+  件名
+  <input type="text" name="title" value="  {{$contact->title}}">
+  <br>
+  メールアドレス
+  <input type="text" name="email" value="{{$contact->email}}">
+  <br>
+  ホームページ
+  <input type="text" name="url" value="{{$contact->url}}">
+  <br>
+  性別
+  <input type="radio" name="gender" id="" value="0"
+  @if($contact->gender === 0)checked @endif>男
+  <input type="radio" name="gender" id="" value="1" @if($contact->gender === 1) checked @endif>女
+  <br>                                                    
+  お問い合わせ内容
+  <textarea name="contact" id="">{{$contact->contact}}</textarea>
+  <br>                              
+  <input type="submit" name="btn btm-info" value="更新する">
+</form>
 ```

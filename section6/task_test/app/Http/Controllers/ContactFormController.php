@@ -70,17 +70,16 @@ class ContactFormController extends Controller
     public function show($id)
     {
         //
-      $contact =   ContactForm::find($id);
+        $contact =   ContactForm::find($id);
 
-      if($contact->gender === 0){
-        $gender = "男性";
-    }
-    else if($contact->gender ===1){
-        $gender = "女性";
-      }
+        if ($contact->gender === 0) {
+            $gender = "男性";
+        } else if ($contact->gender === 1) {
+            $gender = "女性";
+        }
 
-    //   return view("contact.show",compact("contact"));
-      return view("contact.show",compact("contact","gender"));
+        //   return view("contact.show",compact("contact"));
+        return view("contact.show", compact("contact", "gender"));
     }
 
     /**
@@ -92,6 +91,9 @@ class ContactFormController extends Controller
     public function edit($id)
     {
         //
+        $contact =   ContactForm::find($id);
+
+        return view("contact.edit",compact("contact"));
     }
 
     /**

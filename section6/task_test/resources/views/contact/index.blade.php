@@ -18,7 +18,7 @@
                         </form>
 
 
-                        
+
                         <table class="table">
                             <thead>
                                 <tr>
@@ -30,15 +30,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                              @foreach ($contacts as $contact)
-                              <tr>
-                            <th>{{ $contact->id }}</th>
-                            <td>{{ $contact->your_name }}</td>
-                            <td>{{ $contact->title }}</td>
-                            <td>{{ $contact->created_at }}</td>
-                            <td><a href="{{ route('contact.show',['id'=>$contact->id])}}">詳細をみる</a></td>
-                              </tr>
-                        @endforeach                             
+                                @foreach ($contacts as $contact)
+                                    <tr>
+                                        <th>{{ $contact->id }}</th>
+                                        <td>{{ $contact->your_name }}</td>
+                                        <td>{{ $contact->title }}</td>
+                                        <td>{{ $contact->created_at }}</td>
+                                        <td><a href="{{ route('contact.show', ['id' => $contact->id]) }}">詳細をみる</a></td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
 
