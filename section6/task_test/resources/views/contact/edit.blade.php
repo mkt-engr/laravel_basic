@@ -15,29 +15,28 @@
                         @endif
 
                         editです。
-                        <form  method="POST" action="">
+                        <form method="POST" action="{{route('contact.update',['id'=>$contact->id])}}">
                             @csrf
-                              <input type="text" name="your_name" value="  {{$contact->your_name}}">
+                            <input type="text" name="your_name" value="{{ $contact->your_name }}">
                             <br>
                             件名
-                            <input type="text" name="title" value="  {{$contact->title}}">
+                            <input type="text" name="title" value="{{ $contact->title }}">
                             <br>
                             メールアドレス
-                            <input type="text" name="email" value="{{$contact->email}}">
+                            <input type="text" name="email" value="{{ $contact->email }}">
                             <br>
                             ホームページ
-                            <input type="text" name="url" value="{{$contact->url}}">
+                            <input type="text" name="url" value="{{ $contact->url }}">
                             <br>
                             性別
-                            <input type="radio" name="gender" id="" value="0"
-                            @if($contact->gender === 0)checked @endif>男
-                            <input type="radio" name="gender" id="" value="1" @if($contact->gender === 1)checked @endif>女
+                            <input type="radio" name="gender" id="" value="0" @if ($contact->gender === 0) checked @endif>男
+                            <input type="radio" name="gender" id="" value="1" @if ($contact->gender === 1) checked @endif>女
                             <br>
-                          
+
                             <br>
                             お問い合わせ内容
-                            <textarea name="contact" id="">{{$contact->contact}}</textarea>
-                            <br>                              
+                            <textarea name="contact" id="">{{ $contact->contact }}</textarea>
+                            <br>
                             <input type="submit" name="btn btm-info" value="更新する">
                         </form>
                     </div>

@@ -1210,12 +1210,14 @@ return view("contact.show",compact("contact","gender"));
 ## edit 編集画面
 
 - web.php(ルーティング)
-追加する
+  追加する
+
 ```php
 Route::get("edit/{id}", "ContactFormController@edit")->name("contact.edit");
 ```
 
 - ContactFormController.php
+
 ```php
 public function edit($id)
 {
@@ -1228,7 +1230,8 @@ public function edit($id)
 - edit.blade.php
 
 * `value={{＜連想配列の取り出し＞}}`
-* `@if($contact->gender === 0)checked @endif`タグの中でif文使える
+* `@if($contact->gender === 0)checked @endif`タグの中で if 文使える
+
 ```php
 <form  method="POST" action="">
   @csrf
@@ -1247,10 +1250,85 @@ public function edit($id)
   <input type="radio" name="gender" id="" value="0"
   @if($contact->gender === 0)checked @endif>男
   <input type="radio" name="gender" id="" value="1" @if($contact->gender === 1) checked @endif>女
-  <br>                                                    
+  <br>
   お問い合わせ内容
   <textarea name="contact" id="">{{$contact->contact}}</textarea>
-  <br>                              
+  <br>
   <input type="submit" name="btn btm-info" value="更新する">
 </form>
 ```
+
+## update 更新画面
+
+* web.php
+ルーティングを設定する。
+```php
+Route::group(["prefix" => "contact", "middleware" => "auth"], function () {
+  ~~~
+  Route::post("update/{id}", "ContactFormController@update")->name("contact.update");
+  //Route::post("＜ブラウザでアクセスした時のURL/パラメータ＞", "＜ブラウザからの指示を受け取るコントローラ@メソッド名＞")->name(＜View側で使うルーティングの名前＞);
+});  
+```
+
+* edit.blade.php
+```php
+<form method="POST" action="{{route('contact.update',['id'=>$contact->id])}}">
+//action="{{route(＜web.phpでつけたルーティングの名前＞,[＜コントローラで受け取る名前＞=>＜コントローラに渡したい名前＞])}}"
+ @csrf
+ <input type="text" name="your_name" value="{{ $contact->your_name }}">
+ <br>
+ 件名
+ <input type="text" name="title" value="{{ $contact->title }}">
+ <br>
+ メールアドレス
+ <input type="text" name="email" value="{{ $contact->email }}">
+ <br>
+ ホームページ
+ <input type="text" name="url" value="{{ $contact->url }}">
+ <br>
+ 性別
+ <input type="radio" name="gender" id="" v
+ $ontact->gender === 0) checked @endif>男
+ <input type="radio" name="gender" id="" v
+ $ontact->gender === 1) checked @endif>女
+ <br>
+ お問い合わせ内容
+ <textarea name="contact" id="">{{ $contact->contact }}</textarea>
+ <br>
+ <input type="submit" name="btn btm-info" value="更新する">
+</form>
+```
+
+* ContactFormController.php
+```php
+public function update(Request $request, $id)
+{      
+    $contact = ContactForm::find($id);
+    //idを元にエンティティ的なものを作成
+
+    $contact->your_name = $request->input('your_name');
+    //＜DBに保存するカラム名＞ = $request->input(＜View側で書いたname属性＞)
+    $contact->title = $request->input('title');
+    $contact->email = $request->input('email');
+    $contact->url = $request->input('url');
+    $contact->gender = $request->input('gender');    
+    $contact->contact = $request->input('contact');
+    //DB更新
+    $contact->save();
+
+    return redirect("contact/index");
+}
+```
+
+## destroy 削除機能
+formで使う場合はGETかPOSTしか使えない。
+
+* web.php
+```php
+Route::group(["prefix" => "contact", "middleware" => "auth"], function () {
+  Route::post("destroy/{id}", "ContactFormController@destroy")->name("contact.destroy");
+```
+
+あとはほぼupdateと同じ
+
+## サービスへの切り離し（ファットコントローラー防止）
