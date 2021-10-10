@@ -19,7 +19,7 @@ class ContactFormController extends Controller
     {
 
         $search = $request->input("search");
-        // dd($request);
+        // dd($search);
         // エロくワント ORマッパー
         // $contacts= ContactForm::all();
 
@@ -48,7 +48,7 @@ class ContactFormController extends Controller
         $query->orderBy("created_at", "asc");
         $contacts = $query->paginate(20);
 
-        return view("contact.index", compact("contacts"));
+        return view("contact.index", compact("contacts", "search"));
     }
 
     /**

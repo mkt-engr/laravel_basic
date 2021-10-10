@@ -1671,3 +1671,101 @@ $query->orderBy("created_at", "asc");
 $contacts = $query->paginate(20);
 return view("contact.index", compact("contacts"));
 ```
+
+# セクション 7
+
+要件定義の記事：https://qiita.com/digisaku_tamori/items/741fcf0f40dd989ee4f8
+
+## RDB その１
+
+`-m`でマイグレーションファイルを更新する。
+
+```
+php artisan make:model Models/Area -m
+php artisan make:model Models/Shop -m
+php artisan make:model Models/Route -m
+php artisan make:seed RouteSeeder
+php artisan make:seed ShopSeeder
+php artisan make:seed AreaSeeder
+```
+
+- Shop テーブルにカラムを入れる。(マイグレーションファイル)
+
+```php
+public function up()
+{
+    Schema::create('shops', function (Blueprint $table) {
+        $table->bigIncrements('id');
+        $table->string('shop_name', 20);
+        $table->unsignedBigInteger('area_id');
+        $table->timestamps();
+    });
+}
+```
+
+- Route(路線かな？)テーブルにカラムを入れる。
+
+```php
+public function up()
+{
+    Schema::create('routes', function (Blueprint $table) {
+        $table->bigIncrements('id');
+        $table->string('name', 20);
+        $table->integer('sort_no');
+        $table->timestamps();
+    });
+}
+```
+
+Area テーブルと Shop テーブルにダミーデータ挿入
+
+- AreaSeeder.php
+
+```php
+public function run()
+{
+    DB::table('areas')->insert([
+        ["id"=>1,"name"=>"東京","sort_no"=>1],
+        ["id"=>2,"name"=>"大阪","sort_no"=>2],
+        ["id"=>3,"name"=>"福岡","sort_no"=>3],
+    ]);
+}
+```
+
+- ShopSeeder.php
+
+```php
+public function run()
+{
+    DB::table('Shop')->insert([
+            ["id" => 1, "shop_name" => "高級食パン屋", "area_id" => 1],
+            ["id" => 2, "shop_name" => "高級食クロワッサン屋", "area_id" => 2],
+            ["id" => 3, "shop_name" => "高級コッペパン屋", "area_id" => 3],
+            ["id" => 4, "shop_name" => "高級メロンパン屋", "area_id" => 4]
+        ]);
+}
+```
+
+- DatabaseSeeder.php
+  ２つの Seeder を実行するコードを書く
+
+```php
+public function run()
+{
+    $this->call(UsersTableSeeder::class);
+    $this->call(ContactFormSeeder::class);
+    $this->call(AreaSeeder::class);
+    $this->call(ShopSeeder::class);
+}
+```
+
+Seeder を書き換えたので以下を実行
+
+```
+composer dump-autoload
+php artisan migrate:fresh --seed
+```
+
+## RDB その 2
+
+リレーション：https://readouble.com/laravel/6.x/ja/eloquent-relationships.html
