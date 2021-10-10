@@ -16,7 +16,11 @@
                         <form method="GET" action="{{ route('contact.create') }}">
                             <button type="submit" class="btn btn-primary">新規登録</button>
                         </form>
-
+                        <form class="form-inline my-2 my-lg-0" method="GET" action={{ route('contact.index') }}>
+                            <input class="form-control mr-sm-2" type="search" placeholder="検索" aria-label="Search"
+                                name="search">
+                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">検索する</button>
+                        </form>
 
 
                         <table class="table">
@@ -43,6 +47,7 @@
                         </table>
 
 
+                        {{ $contacts->links() }}
 
                     </div>
                 </div>

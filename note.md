@@ -1260,17 +1260,19 @@ public function edit($id)
 
 ## update 更新画面
 
-* web.php
-ルーティングを設定する。
+- web.php
+  ルーティングを設定する。
+
 ```php
 Route::group(["prefix" => "contact", "middleware" => "auth"], function () {
   ~~~
   Route::post("update/{id}", "ContactFormController@update")->name("contact.update");
   //Route::post("＜ブラウザでアクセスした時のURL/パラメータ＞", "＜ブラウザからの指示を受け取るコントローラ@メソッド名＞")->name(＜View側で使うルーティングの名前＞);
-});  
+});
 ```
 
-* edit.blade.php
+- edit.blade.php
+
 ```php
 <form method="POST" action="{{route('contact.update',['id'=>$contact->id])}}">
 //action="{{route(＜web.phpでつけたルーティングの名前＞,[＜コントローラで受け取る名前＞=>＜コントローラに渡したい名前＞])}}"
@@ -1299,10 +1301,11 @@ Route::group(["prefix" => "contact", "middleware" => "auth"], function () {
 </form>
 ```
 
-* ContactFormController.php
+- ContactFormController.php
+
 ```php
 public function update(Request $request, $id)
-{      
+{
     $contact = ContactForm::find($id);
     //idを元にエンティティ的なものを作成
 
@@ -1311,7 +1314,7 @@ public function update(Request $request, $id)
     $contact->title = $request->input('title');
     $contact->email = $request->input('email');
     $contact->url = $request->input('url');
-    $contact->gender = $request->input('gender');    
+    $contact->gender = $request->input('gender');
     $contact->contact = $request->input('contact');
     //DB更新
     $contact->save();
@@ -1321,14 +1324,350 @@ public function update(Request $request, $id)
 ```
 
 ## destroy 削除機能
-formで使う場合はGETかPOSTしか使えない。
 
-* web.php
+form で使う場合は GET か POST しか使えない。
+
+- web.php
+
 ```php
 Route::group(["prefix" => "contact", "middleware" => "auth"], function () {
   Route::post("destroy/{id}", "ContactFormController@destroy")->name("contact.destroy");
 ```
 
-あとはほぼupdateと同じ
+あとはほぼ update と同じ
 
 ## サービスへの切り離し（ファットコントローラー防止）
+
+コントローラに記述が多くなること：ファットコントローラ
+
+サービスに分離する。
+
+## バリデーション
+
+フォームリクエストバリデーション：https://readouble.com/laravel/6.x/ja/validation.html
+
+```
+php artisan make:request StoreContactForm
+```
+
+これで`App\Requests\StoreContactForm.php`が作成される。ここにバリデーションを書いていく。一旦`authorize`メソッドの返り値は`true`にしておく。
+
+- StoreContactForm.php
+
+```php
+public function authorize()
+{
+    return true;
+}
+```
+
+`rules`メソッドにバリデーションを書く。
+
+`使用可能なバリデーションルール`のセクションの中に書き方が書いてる。
+
+- 入力値が明日以降かバリデーションする。
+
+```php
+'start_date' => 'required|date|after:tomorrow'
+```
+
+- StoreContactForm.php
+
+```php
+public function rules()
+{
+    return [
+        //フォームの中のname属性
+        "your_name"=>"required|string|max:20",
+        "title"=>"required|string|max:50",
+        "email"=>"required|email|unique:user|max:255",
+        "url"=>"url|nullable",
+        "gender"=>"required",
+        "age"=>"required",
+        "contact"=>"required|string|max:200",
+        "caution"=>"required|accepted",//acceptedはチェックを入れているかどうか
+    ];
+}
+```
+
+- ContactFormController.php
+
+`store`メソッドにバリデーションを書く。引数を`StoreContactForm`に変更すると自動的にバリデーションをしてくれる。
+
+### エラーメッセージの出し方
+
+- create.blade.php
+
+Thymeleaf っぽい。View 側で`$errors`の変数が使える。`$errors->all()`でエラーの内容が配列で取り出せる。
+
+```php
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+```
+
+- validation.php
+  バリデーションのメッセージに関するファイル。エラーメッセージの「~~~は必須です」などの~~~の部分を日本語に変えたい時は以下のようにする。
+
+```php
+'attributes' => [
+    "password" => "パスワード", //追加
+    "email" => "メールアドレス", //追記
+],
+```
+
+## ダミーデータの作り方
+
+- シーディング：https://readouble.com/laravel/6.x/ja/seeding.html
+- シーダ：初期設定のこと
+
+```
+php artisan make:seeder UsersTableSeeder
+```
+
+これで`database/seeds/UsersTableSeeder.php`が作成される。ここにダミーデータを作成していく。
+
+- UsersTableSeeder.php
+
+`run`メソッドにダミーデータを書く。`insert`メソッドの中に配列でデータを書いていく。
+
+```php
+public function run()
+{
+    DB::table('users')->insert(
+        [
+            'name' => Str::random(10),
+            'email' => Str::random(10) . '@gmail.com',
+            'password' => Hash::make('password'),
+        ],
+        [
+            'name' => Str::random(10),
+            'email' => Str::random(10) . '@gmail.com',
+            'password' => Hash::make('password'),
+        ]
+    );
+}
+```
+
+これを`DatabaseSeeder.php`で以下のように呼び出す必要がある。
+
+```php
+/**
+ * データベース初期値設定の実行
+ *
+ * @return void
+ */
+public function run()
+{
+    $this->call([
+        UsersTableSeeder::class,
+        PostsTableSeeder::class,
+        CommentsTableSeeder::class,
+    ]);
+}
+```
+
+シーダクラスを書くと Composer のオートローダを再生成する必要がある。その時には以下のコマンドを実行する。ざっくりいうとシーダクラスの再読み込みみたいな感じかな。
+
+```
+composer dump-autoload
+```
+
+シードクラスの実行
+
+```
+php artisan db:seed
+```
+
+これでエラーが出た場合はデータを削除して insert 文を実行する。
+
+```
+php artisan migrate:refresh --seed
+```
+
+## 大量のダミーデータの作成（Factory ＆ Faker）
+
+データベースのテスト：https://readouble.com/laravel/6.x/ja/database-testing.html
+
+ファクトリの作成コマンド
+
+```
+php artisan make:factory ContactFormFactory
+```
+
+`database/factories/ContactFormFactory.php`が作成される。デフォルトで作成されたものだと
+
+```php
+use App\Model;
+```
+
+となっているがこれを自分が利用したい Model にする必要がある。ここでは ContactFormMModel。書き換えると以下のようになる。
+
+```php
+use App\Models\ContactForm;
+use Faker\Generator as Faker;
+
+//defineのクラス名もContactFormModel::classにする必要がある。
+$factory->define(ContactFormModel::class, function (Faker $faker) {
+    return [
+        //
+    ];
+});
+```
+
+`fakerphp/faker`で検索かけてみる。
+
+faker の使い方：https://shingo-sasaki-0529.hatenablog.com/entry/how_to_use_php_faker
+
+- app.php
+
+faker の日本語化
+
+```php
+'faker_locale' => 'ja_JP',
+```
+
+- ContactFormFactory.php
+
+  - `name`は人名を出すっぽい
+  - `realText(XXX)`は日本語を XXX 文字出す。
+
+```php
+use App\Models\ContactForm;
+use Faker\Generator as Faker;
+
+$factory->define(ContactFormModel::class, function (Faker $faker) {
+    return [
+        "your_name" => $faker->name,
+        "title" => $faker->realText(50), //日本語を出すのはrealText()
+        "email" => $faker->unique()->email,
+        "url" => $faker->url,
+        "gender" => $faker->randomElement([0, 1]),
+        "contact" => $faker->realText(200),
+    ];
+});
+```
+
+これを実行する Seeder を作成する。
+
+```
+php artisan make:seeder ContactFormSeeder
+```
+
+- ContactFormSeeder.php
+
+```php
+public function run()
+{
+  //factory(＜ダミーデータを作りたいクラス名::class＞,＜個数＞)->create();
+  factory(ContactForm::class, 200)->create(); //200個のダミーデータを作る。
+}
+```
+
+- DatabaseSeeder.php
+  ContactFormSeeder.php を実行するメソッドを書く。
+
+```php
+public function run()
+{
+    $this->call(UsersTableSeeder::class);
+    $this->call(ContactFormSeeder::class);
+}
+```
+
+Seeder を変更したので以下を実行
+
+```
+composer dump-autoload
+```
+
+以下を実行して一度データを削除してからデータを流す。
+
+```
+php artisan migrate:fresh --seed
+```
+
+## ページネーション
+
+ペジネーション(名前笑)：https://readouble.com/laravel/6.x/ja/pagination.html
+
+Laravel 側で用意してくれてめっちゃ楽
+
+- ContactFormController.php
+
+```php
+ $contacts = DB::table('contact_forms')->select("id", "your_name", "title", "created_at")->orderBy("created_at", "asc")->paginate(20);
+```
+
+`->paginate(20)`をつけるだけとかマジで楽。
+
+- index.blade.php
+  ページネーションの出し方
+
+```php
+ {{ $contacts->links() }}
+```
+
+楽すぎ〜
+
+## 検索フォーム
+
+- `mb_convert_kana`:https://www.php.net/manual/ja/function.mb-convert-kana.php
+
+  - 第２引数を's'にすると全角スペースを半角スペースに変える。ちなみに'S'にすると半角スペースを全角スペースに変える。
+
+- `preg_split`:https://www.php.net/manual/ja/function.preg-split.php
+  ```php
+  $search_split2 = preg_split("/[\s]+/", $search_split, -1, PREG_SPLIT_NO_EMPTY);
+  preg_split(＜分割方法（正規表現）＞,＜分割する文字＞,＜分割する文字数（0,-1にすると制限なし）＞,＜flag（今回のフラグの場合は空文字列でないものだけがreturnされる。）＞)
+  ```
+
+* index.blade.php
+  input タグの type="search"を作る。
+
+```html
+<form class="form-inline my-2 my-lg-0" method="GET" action={{ route('contact.index') }}>
+<input class="form-control mr-sm-2" type="search" placeholder="検索" aria-label="Search"1 name="search">
+<button class="btn btn-outline-success my-2 my-sm-0" type="submit">検索する</button>
+</form>
+```
+
+- ContactFormController.php
+  フォームの値を受け取ってクエリビルダでクエリを作る。
+
+```php
+public function index(Request $request)
+{
+
+//inputのname属性がsearchの値を受け取る。
+$search = $request->input("search");
+
+//検索フォーム
+$query = DB::table('contact_forms');
+
+//nullじゃなかったらクエリを作る。
+if ($search !== null) {
+//全角スペースを半角に
+$search_split = mb_convert_kana($search, "s");
+
+//空白で区切る
+$search_split2 = preg_split("/[\s]+/", $search_split, -1,PREG_SPLIT_NO_EMPTY);
+
+//単語をループで回す。
+foreach ($search_split2 as $value) {
+            $query->where("your_name", "like", "%" . $value . "%");
+}
+      }
+
+
+$query->select("id", "your_name", "title", "created_at");
+$query->orderBy("created_at", "asc");
+$contacts = $query->paginate(20);
+return view("contact.index", compact("contacts"));
+```
