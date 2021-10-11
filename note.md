@@ -1769,3 +1769,53 @@ php artisan migrate:fresh --seed
 ## RDB その 2
 
 リレーション：https://readouble.com/laravel/6.x/ja/eloquent-relationships.html
+
+モデルの Area と Shop を作る。
+Area：Shop = 1 : 多
+
+２つのテーブルを紐づける。
+
+- Models/Area.php
+  １つのエリアの中にたくさんの店があるので`hasMany()`を使う。
+
+```php
+class Area extends Model
+{
+    public function shops()
+    {
+        return $this->hasMany("App\Models\Shop");
+    }
+}
+```
+
+- Models/Shop.php
+  １つの店は１つのエリアの中に存在するので`belongsTo()`を使う。
+
+```php
+class Shop extends Model
+{
+    public function area()
+    {
+        return $this->belongsTo("App\Models\Area");
+    }
+}
+```
+
+Shop のコントローラを作る
+
+```
+php artisan make:controller ShopController
+```
+
+```php
+public function index()
+{
+    //主->従
+    //Shopsの中でAreaのIDが１のものを探す
+    $area_tokyo = Area::find(1)->shops;
+    //主<-従
+    //ShopのIDが2のものの名前を表示する
+    $shop = Shop::find(2)->area->name;
+    dd($area_tokyo, $shop);
+}
+```
