@@ -1819,3 +1819,28 @@ public function index()
     dd($area_tokyo, $shop);
 }
 ```
+
+## 外部キー制約
+
+外部キー制約を付けようと思うとマイグレーションファイルを変更する必要がある。
+
+shops テーブルの`area_id`は Area テーブルにあるものしか入れることができないようにする。それが外部キー制約。
+
+外部キー制約：https://readouble.com/laravel/6.x/ja/migrations.html
+
+- マイグレーションファイル
+
+```php
+public function up()
+  {
+      Schema::create('shops', function (Blueprint $table) {
+          $table->bigIncrements('id');
+          $table->string('shop_name', 20);
+          $table->unsignedBigInteger('area_id');//FK(Foreign Key)
+          $table->timestamps();
+
+          //$table->foreign(＜外部キー制約を付けたいカラム名(子テーブルの持ち物)＞)->reference(＜外部キー(親テーブルの持ち物)＞)->(＜親テーブル名＞)
+          $table->foreign('area_id')->references('id')->on('areas');
+      });
+  }
+```
