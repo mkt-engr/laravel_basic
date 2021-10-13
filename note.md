@@ -1878,3 +1878,8 @@ $shop_route = Shop::find(1)->route()->get();
 ```
 
 `belongsTo`とか`belongsToMany`の使い分けは DB の関係次第で使い分ける？なんか面倒やな。
+
+## その他
+
+Laravel の良さげなプロダクト
+https://github.com/koel/koel
