@@ -17,6 +17,9 @@ class ShopController extends Controller
         //主<-従
         $shop = Shop::find(2)->area->name;
 
-        dd($area_tokyo, $shop);
+        //多：多
+        $shop_route = Shop::find(1)->route()->get();
+        dd(Shop::find(1), Shop::find(1)->route()->get());
+        dd($area_tokyo, $shop, $shop_route);
     }
 }

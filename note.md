@@ -1844,3 +1844,37 @@ public function up()
       });
   }
 ```
+
+## RDB(多対多)
+
+多対多：https://readouble.com/laravel/6.x/ja/eloquent-relationships.html#many-to-many
+
+中間テーブル(pivot table)を作成する。
+
+```
+# php artisan make:migration create_＜テーブル1＞_＜テーブル2＞_table
+php artisan make:migration create_route_shop_table
+php artisan make:seed RouteSeeder
+php artisan make:seed RouteShopSeeder
+```
+
+主キーの作成方法（使用可能なインデックスタイプ）：https://readouble.com/laravel/6.x/ja/migrations.html
+
+```php
+$table->primary('id');
+```
+
+```
+composer dump-autoload
+php artisan migrate:fresh --seed
+```
+
+- ShopController.php
+
+```php
+//1. Shop::find(1)でShopの中でidが１の物を取得する。
+//2. Shop.phpで定義したroute()メソッドを呼び出す。
+$shop_route = Shop::find(1)->route()->get();
+```
+
+`belongsTo`とか`belongsToMany`の使い分けは DB の関係次第で使い分ける？なんか面倒やな。
